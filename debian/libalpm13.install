@@ -1,0 +1,2 @@
+usr/lib/${DEB_HOST_MULTIARCH}/libalpm.so.13*
+usr/share/locale/*/LC_MESSAGES/libalpm.mo

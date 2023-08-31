@@ -1,0 +1,8 @@
+Bug-Database: https://bugs.archlinux.org/index.php?project=3
+Bug-Submit: Bug-Database
+Changelog: https://gitlab.archlinux.org/pacman/pacman/-/blob/master/NEWS
+Documentation: https://wiki.archlinux.org/title/pacman
+Donation: https://archlinux.org/donate
+Repository: https://gitlab.archlinux.org/pacman/pacman.git
+Repository-Browse: https://gitlab.archlinux.org/pacman/pacman
+Security-Contact: pacman-dev@archlinux.org

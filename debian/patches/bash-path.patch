@@ -1,0 +1,20 @@
+Description: Set bash path to /bin/bash for reproducibility
+ The build system finds the path to bash and replaces script headers
+ with it. This makes the build non-reproducible since some systems are
+ merged-usr and some are not. This patch makes tells the build system
+ to search specifically for /bin/bash instead of bash anywhere on PATH.
+Author: Ben Westover <me@benthetechguy.net>
+Forwarded: not-needed
+Last-Update: 2022-09-16
+
+--- a/meson.build
++++ b/meson.build
+@@ -31,7 +31,7 @@
+ LDCONFIG = get_option('ldconfig')
+ MESON_MAKE_SYMLINK = join_paths(meson.source_root(), 'build-aux/meson-make-symlink.sh')
+ 
+-BASH = find_program('bash4', 'bash')
++BASH = find_program('/bin/bash')
+ if BASH.found()
+   bash_version = run_command(BASH, '-c', 'IFS=.; echo "${BASH_VERSINFO[*]:0:3}"').stdout()
+ 

@@ -1,0 +1,7 @@
+debian/testpkg.8
+usr/share/man/man1/makepkg-template.1
+usr/share/man/man5/BUILDINFO.5
+usr/share/man/man5/PKGBUILD.5
+usr/share/man/man5/makepkg.conf.5
+usr/share/man/man8/makepkg.8
+usr/share/man/man8/vercmp.8

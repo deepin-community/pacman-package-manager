@@ -1,0 +1,7 @@
+etc/pacman.conf
+usr/bin/pacman*
+usr/bin/repo*
+usr/share/bash-completion/completions/pacman*
+usr/share/locale/*/LC_MESSAGES/pacman*
+usr/share/zsh/site-functions/_pacman usr/share/zsh/vendor-completions/
+var/*

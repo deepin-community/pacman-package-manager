@@ -1,0 +1,12 @@
+include:
+ - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/salsa-ci.yml
+ - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/pipeline-jobs.yml
+
+variables:
+ # The second build (to test reproducibility) has a lot of failing tests
+ # for unknown reasons. This is being investigated. In the meantine, the
+ # package itself is reproducible (see tests.reproducible-builds.org).
+ SALSA_CI_DISABLE_REPROTEST: 1
+
+ # fakechroot (a build dep) has dependency problems in the crossbuild.
+ SALSA_CI_DISABLE_CROSSBUILD_ARM64: 1

@@ -1,0 +1,120 @@
+Description: Add meson option to specify alternative keyring directory
+ The Debian package archlinux-keyring places its keyring in Debian's
+ standard directory of /usr/share/keyrings, but pacman is hard coded to
+ use /usr/share/pacman/keyrings. This patch adds a meson build option
+ to change that directory under /usr/share.
+Author: Daan De Meyer <daan.j.demeyer@gmail.com>
+Bug: https://gitlab.archlinux.org/pacman/pacman/-/merge_requests/11
+Applied-Upstream: 79bd512181af12ec80fd8f79486fc9508fa4a1b3
+Reviewed-by: Ben Westover <me@benthetechguy.net>
+Last-Update: 2022-09-16
+
+--- a/build-aux/edit-script.sh.in
++++ b/build-aux/edit-script.sh.in
+@@ -11,6 +11,7 @@
+   -e "s|@localstatedir[@]|@localstatedir@|g" \
+   -e "s|@libmakepkgdir[@]|@LIBMAKEPKGDIR@|g" \
+   -e "s|@pkgdatadir[@]|@PKGDATADIR@|g" \
++  -e "s|@keyringdir[@]|@KEYRINGDIR@|g" \
+   -e "s|@prefix[@]|@PREFIX@|g" \
+   -e "1s|#!/bin/bash|#!@BASH@|g" \
+   -e "s|@PACKAGE_VERSION[@]|@PACKAGE_VERSION@|g" \
+--- a/doc/meson.build
++++ b/doc/meson.build
+@@ -28,6 +28,7 @@
+  '-a', 'srcext=@0@'.format(get_option('src-ext')),
+  '-a', 'pkgext=@0@'.format(get_option('pkg-ext')),
+  '-a', 'pkgdatadir=@0@'.format(PKGDATADIR),
++ '-a', 'keyringdir=@0@'.format(KEYRINGDIR),
+  '-a', 'localstatedir=@0@'.format(LOCALSTATEDIR),
+  '-a', 'sysconfdir=@0@'.format(SYSCONFDIR),
+  '-a', 'datarootdir=@0@'.format(DATAROOTDIR),
+--- a/doc/pacman-key.8.asciidoc
++++ b/doc/pacman-key.8.asciidoc
+@@ -86,7 +86,7 @@
+ 
+ *\--populate*::
+ 	Reload the default keys from the (optionally provided) keyrings in
+-	+{pkgdatadir}/keyrings+. For more information, see
++	+{keyringdir}+. For more information, see
+ 	<<PK,Providing a Keyring for Import>> below.
+ 
+ *-u, \--updatedb*::
+@@ -129,7 +129,7 @@
+ PGP keys used in the signing of its packages and repository databases that can
+ be readily imported into the pacman keyring. This is achieved by providing a
+ PGP keyring file `foo.gpg` that contains the keys for the foo keyring in the
+-directory +{pkgdatadir}/keyrings+.
++directory +{keyringdir}+.
+ 
+ Optionally, the file `foo-trusted` can be provided containing a list of trusted
+ key IDs for that keyring. This is a file in a format compatible with 'gpg
+--- a/meson.build
++++ b/meson.build
+@@ -26,6 +26,7 @@
+ BUILDSCRIPT = get_option('buildscript')
+ LIBMAKEPKGDIR = join_paths(PREFIX, DATAROOTDIR, 'makepkg')
+ PKGDATADIR = join_paths(PREFIX, DATAROOTDIR, meson.project_name())
++KEYRINGDIR = join_paths(PREFIX, DATAROOTDIR, get_option('keyringdir'))
+ 
+ PYTHON = import('python').find_installation('python3')
+ LDCONFIG = get_option('ldconfig')
+@@ -260,6 +261,7 @@
+ substs.set('sysconfdir', SYSCONFDIR)
+ substs.set('localstatedir', LOCALSTATEDIR)
+ substs.set('PKGDATADIR', PKGDATADIR)
++substs.set('KEYRINGDIR', KEYRINGDIR)
+ substs.set('PREFIX', PREFIX)
+ substs.set('BASH', BASH.path())
+ substs.set('PACKAGE_VERSION', PACKAGE_VERSION)
+@@ -433,6 +435,7 @@
+   '   localstatedir           : @0@'.format(LOCALSTATEDIR),
+   '       database dir        : @0@'.format(join_paths(LOCALSTATEDIR, 'lib/pacman/')),
+   '       cache dir           : @0@'.format(join_paths(LOCALSTATEDIR, 'cache/pacman/pkg/')),
++  '   keyringdir              : @0@'.format(KEYRINGDIR),
+   '   compiler                : @0@ @1@'.format(cc.get_id(), cc.version()),
+   '',
+   '   Architecture            : @0@'.format(carch),
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -26,6 +26,9 @@
+ option('datarootdir', type : 'string', value : 'share',
+        description : 'FIXME')
+ 
++option('keyringdir', type : 'string', value: 'pacman/keyrings',
++	description : 'Where to look for keyring files under datarootdir')
++
+ option('makepkg-template-dir', type : 'string', value : '/usr/share/makepkg-template',
+        description : 'template dir used by makepkg-template')
+ 
+--- a/scripts/completion/zsh_completion.in
++++ b/scripts/completion/zsh_completion.in
+@@ -616,7 +616,7 @@
+ 	'--init[Ensure the keyring is properly initialized]'
+ 	'--list-sigs[List keys and their signatures]:*: :_keys'
+ 	'--lsign-key[Locally sign the specified keyid]:*: :_keys'
+-	'--populate[Reload the default keys from the (given) keyrings in '/usr/share/pacman/keyrings']: :_path_files -W /usr/share/pacman/keyrings'
++	'--populate[Reload the default keys from the (given) keyrings in '@keyringdir@']: :_path_files -W @keyringdir@'
+ 	'--refresh-keys[Update specified or all keys from a keyserver]:*: :_keys'
+ )
+ 
+--- a/scripts/pacman-key.sh.in
++++ b/scripts/pacman-key.sh.in
+@@ -75,7 +75,7 @@
+ 	printf -- "$(gettext "  --list-sigs               List keys and their signatures")\n"
+ 	printf -- "$(gettext "  --lsign-key               Locally sign the specified keyid")\n"
+ 	printf -- "$(gettext "  --populate                Reload the default keys from the (given) keyrings\n\
+-                            in '%s'")\n" "@pkgdatadir@/keyrings"
++                            in '%s'")\n" "@keyringdir@"
+ 	printf -- "$(gettext "  --refresh-keys            Update specified or all keys from a keyserver")\n"
+ 	printf -- "$(gettext "  --verbose                 Show extra information")\n"
+ 	echo
+@@ -283,7 +283,7 @@
+ }
+ 
+ populate_keyring() {
+-	local KEYRING_IMPORT_DIR='@pkgdatadir@/keyrings'
++	local KEYRING_IMPORT_DIR='@keyringdir@'
+ 
+ 	local keyring KEYRINGIDS=("$@")
+ 	local ret=0

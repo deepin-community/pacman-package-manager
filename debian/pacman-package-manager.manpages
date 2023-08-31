@@ -1,0 +1,4 @@
+debian/pacman-db-upgrade.8
+usr/share/man/man5/pacman*
+usr/share/man/man8/pacman*
+usr/share/man/man8/repo*

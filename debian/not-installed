@@ -1,0 +1,2 @@
+# This file conflicts with one provided by the bash-completion package.
+usr/share/bash-completion/completions/makepkg

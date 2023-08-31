@@ -1,4 +1,24 @@
 #!/usr/bin/make -f
 
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# libalpm* is a different version than the other binary packages.
+include /usr/share/dpkg/pkg-info.mk
+DEB_REVISION = $(word 2, $(subst -, ,$(DEB_VERSION)))
+LIBALPM_VERSION = 13.0.2
+
 %:
 	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- -Dkeyringdir=keyrings
+
+execute_after_dh_auto_clean:
+	rm -rf obj-* test/pacman/__pycache__
+
+execute_after_dh_gencontrol:
+	dh_gencontrol -plibalpm13 -- -v$(LIBALPM_VERSION)-$(DEB_REVISION)
+	dh_gencontrol -plibalpm-dev -- -v$(LIBALPM_VERSION)-$(DEB_REVISION)
+
+override_dh_makeshlibs:
+	dh_makeshlibs -- -v$(LIBALPM_VERSION)

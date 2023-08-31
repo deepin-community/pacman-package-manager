@@ -1,0 +1,7 @@
+etc/makepkg.conf
+usr/bin/makepkg*
+usr/bin/testpkg
+usr/bin/vercmp
+usr/share/makepkg
+usr/share/pacman/*
+usr/share/pkgconfig/libmakepkg.pc
