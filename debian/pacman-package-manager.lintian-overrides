@@ -1,0 +1,8 @@
+# This binary is an easter egg. Notice it is an exact copy of repo-add.
+# repo-add contains code in it that detects the executed filename, and
+# if it is repo-elephant, instead of performing the functions of
+# repo-add, it prints an ASCII elephant to console and exits.
+# .
+# https://gitlab.archlinux.org/pacman/pacman/-/blob/v6.0.2/scripts/repo-add.sh.in#L578-581
+# https://gitlab.archlinux.org/pacman/pacman/-/blob/v6.0.2/scripts/repo-add.sh.in#L370-383
+no-manual-page [usr/bin/repo-elephant]

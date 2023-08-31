@@ -1,0 +1,8 @@
+# The scripts are not meant to be executable; they are executed
+# internally by makepkg.
+script-not-executable
+
+# This script is not meant to be executed. Its interpreter is
+# /hint/bash, which exists to provide a universal hint to text editors
+# that the script is in bash format without making it executable.
+wrong-path-for-interpreter /hint/bash != /bin/bash [etc/makepkg.conf]

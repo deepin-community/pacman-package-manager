@@ -1,0 +1,3 @@
+bash-path.patch
+fix-shebangs.patch
+keyring-dir.patch
